@@ -8,8 +8,12 @@ public partial class App : Application
 {
     private Window? _window;
 
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+    private static extern bool SetEnvironmentVariable(string lpName, string lpValue);
+
     public App()
     {
+        Environment.SetEnvironmentVariable("MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY", AppContext.BaseDirectory);
         InitializeComponent();
         ConfigureServices();
     }
@@ -28,6 +32,16 @@ public partial class App : Application
         services.AddSingleton<FileManager>();
         services.AddSingleton<RconManager>();
         services.AddSingleton<SteamCMDManager>();
+        services.AddSingleton<MinecraftDeployService>();
+        services.AddSingleton<MoreGamesDeployService>();
+        services.AddSingleton<ModrinthService>();
+        services.AddSingleton<GameConfigService>();
+        services.AddSingleton<FrpManager>();
+        services.AddSingleton<ServerQueryService>();
+        services.AddSingleton<WebhookService>();
+        services.AddSingleton<ImportExportService>();
+        services.AddSingleton<UpdateChecker>();
+        services.AddSingleton<CommandTemplateService>();
 
         var provider = services.BuildServiceProvider();
         ServiceLocator.Initialize(provider);

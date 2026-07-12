@@ -6,18 +6,19 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:GSM3.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded"
     mc:Ignorable="d">
 
-    <Grid Padding="24,16,24,16" RowSpacing="12">
+    <Grid Padding="24,16,24,16" RowSpacing="8">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Title and session management toolbar -->
+        <!-- Title row with history flyout and clear -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -34,19 +35,41 @@
                 Grid.Column="2"
                 Orientation="Horizontal"
                 Spacing="4">
-                <Button x:Name="NewSessionButton" Click="NewSessionButton_Click" ToolTipService.ToolTip="新建会话">
+                <Button x:Name="HistoryButton" ToolTipService.ToolTip="历史命令">
                     <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon FontSize="14" Glyph="&#xE710;" />
-                        <TextBlock Text="新建会话" />
+                        <FontIcon FontSize="14" Glyph="&#xE81C;" />
+                        <TextBlock Text="历史命令" />
                     </StackPanel>
+                    <Button.Flyout>
+                        <Flyout x:Name="HistoryFlyout">
+                            <StackPanel Width="300" Spacing="4">
+                                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="最近命令" />
+                                <ListView
+                                    x:Name="HistoryList"
+                                    MaxHeight="300"
+                                    SelectionChanged="HistoryList_SelectionChanged">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock
+                                                FontFamily="Cascadia Mono, Consolas, monospace"
+                                                FontSize="13"
+                                                Text="{Binding}" />
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                                <TextBlock
+                                    x:Name="HistoryEmptyText"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="暂无历史命令"
+                                    Visibility="Visible" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
                 </Button>
-                <Button x:Name="CloseSessionButton" Click="CloseSessionButton_Click" ToolTipService.ToolTip="关闭会话">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <FontIcon FontSize="14" Glyph="&#xE711;" />
-                        <TextBlock Text="关闭会话" />
-                    </StackPanel>
-                </Button>
-                <Button x:Name="ClearScreenButton" Click="ClearScreenButton_Click" ToolTipService.ToolTip="清屏">
+                <Button
+                    x:Name="ClearScreenButton"
+                    Click="ClearScreenButton_Click"
+                    ToolTipService.ToolTip="清屏">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <FontIcon FontSize="14" Glyph="&#xE74D;" />
                         <TextBlock Text="清屏" />
@@ -55,44 +78,90 @@
             </StackPanel>
         </Grid>
 
-        <!-- Session tabs -->
+        <!-- Quick command buttons -->
         <StackPanel
-            x:Name="SessionTabs"
             Grid.Row="1"
             Orientation="Horizontal"
             Spacing="4">
+            <TextBlock
+                Margin="0,0,4,0"
+                VerticalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Text="快捷命令:" />
             <Button
-                Background="{ThemeResource AccentFillColorDefaultBrush}"
-                Content="会话 1"
-                Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
-            <Button Content="会话 2" />
-            <Button ToolTipService.ToolTip="新建会话">
-                <FontIcon FontSize="12" Glyph="&#xE710;" />
-            </Button>
+                Click="QuickCommand_Click"
+                Content="dir"
+                FontFamily="Cascadia Mono, Consolas, monospace"
+                FontSize="12"
+                Padding="8,4"
+                Tag="dir" />
+            <Button
+                Click="QuickCommand_Click"
+                Content="cd"
+                FontFamily="Cascadia Mono, Consolas, monospace"
+                FontSize="12"
+                Padding="8,4"
+                Tag="cd" />
+            <Button
+                Click="QuickCommand_Click"
+                Content="netstat"
+                FontFamily="Cascadia Mono, Consolas, monospace"
+                FontSize="12"
+                Padding="8,4"
+                Tag="netstat -ano" />
+            <Button
+                Click="QuickCommand_Click"
+                Content="tasklist"
+                FontFamily="Cascadia Mono, Consolas, monospace"
+                FontSize="12"
+                Padding="8,4"
+                Tag="tasklist" />
+            <Button
+                Click="QuickCommand_Click"
+                Content="ipconfig"
+                FontFamily="Cascadia Mono, Consolas, monospace"
+                FontSize="12"
+                Padding="8,4"
+                Tag="ipconfig" />
+            <Button
+                Click="QuickCommand_Click"
+                Content="systeminfo"
+                FontFamily="Cascadia Mono, Consolas, monospace"
+                FontSize="12"
+                Padding="8,4"
+                Tag="systeminfo" />
         </StackPanel>
 
-        <!-- Terminal output area -->
-        <Border
-            Grid.Row="3"
-            Background="#0C0C0C"
-            CornerRadius="8">
-            <ScrollViewer
-                x:Name="TerminalScrollViewer"
-                Padding="12"
-                HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto">
-                <TextBlock
-                    x:Name="TerminalOutput"
-                    FontFamily="Cascadia Mono, Consolas, Courier New, monospace"
-                    FontSize="14"
-                    Foreground="#CCCCCC"
-                    IsTextSelectionEnabled="True"
-                    TextWrapping="Wrap" />
-            </ScrollViewer>
-        </Border>
+        <!-- TabView with terminal sessions -->
+        <TabView
+            x:Name="TerminalTabView"
+            Grid.Row="2"
+            AddTabButtonClick="TabView_AddTabButtonClick"
+            IsAddTabButtonVisible="True"
+            SelectionChanged="TabView_SelectionChanged"
+            TabCloseRequested="TabView_TabCloseRequested"
+            TabWidthMode="SizeToContent">
+            <TabView.TabStripFooter>
+                <StackPanel
+                    Margin="8,0,0,0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center">
+                    <ComboBox
+                        x:Name="InstanceSelector"
+                        Width="200"
+                        PlaceholderText="选择实例"
+                        SelectedIndex="0">
+                        <ComboBoxItem Content="通用终端" />
+                    </ComboBox>
+                </StackPanel>
+            </TabView.TabStripFooter>
+        </TabView>
 
         <!-- Command input area -->
-        <Grid Grid.Row="4" ColumnSpacing="8">
+        <Grid
+            Grid.Row="3"
+            Margin="0,4,0,0"
+            ColumnSpacing="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />

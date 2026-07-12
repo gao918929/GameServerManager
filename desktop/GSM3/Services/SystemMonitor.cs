@@ -252,6 +252,7 @@ public class SystemMonitor : IDisposable
                     Protocol = "TCP",
                     LocalAddress = conn.LocalEndPoint.Address.ToString(),
                     LocalPort = conn.LocalEndPoint.Port,
+                    RemoteAddress = $"{conn.RemoteEndPoint.Address}:{conn.RemoteEndPoint.Port}",
                     State = conn.State.ToString()
                 });
             }

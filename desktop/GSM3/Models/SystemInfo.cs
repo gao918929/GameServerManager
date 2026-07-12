@@ -58,6 +58,7 @@ public class ActivePort
     public string Protocol { get; set; } = "";
     public string LocalAddress { get; set; } = "";
     public int LocalPort { get; set; }
+    public string RemoteAddress { get; set; } = "";
     public string State { get; set; } = "";
     public int Pid { get; set; }
     public string ProcessName { get; set; } = "";

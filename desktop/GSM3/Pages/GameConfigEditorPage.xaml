@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page
+    x:Class="GSM3.Pages.GameConfigEditorPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:GSM3.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24,16,24,16" RowSpacing="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock
+            Grid.Row="0"
+            Style="{StaticResource TitleTextBlockStyle}"
+            Text="游戏配置编辑器" />
+
+        <!-- Instance selector -->
+        <Grid Grid.Row="1" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox
+                x:Name="InstanceComboBox"
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                Header="选择实例"
+                PlaceholderText="选择一个实例..."
+                SelectionChanged="InstanceComboBox_SelectionChanged" />
+
+            <Button
+                x:Name="LoadInstanceConfigButton"
+                Grid.Column="1"
+                VerticalAlignment="Bottom"
+                Click="LoadInstanceConfig_Click"
+                IsEnabled="False">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE8E5;" />
+                    <TextBlock Text="加载实例配置" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                x:Name="SaveToInstanceButton"
+                Grid.Column="2"
+                VerticalAlignment="Bottom"
+                Click="SaveToInstance_Click"
+                IsEnabled="False"
+                Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE74E;" />
+                    <TextBlock Text="保存到实例" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Game selector and action buttons -->
+        <Grid Grid.Row="2" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <ComboBox
+                x:Name="GameSelector"
+                Grid.Column="0"
+                HorizontalAlignment="Stretch"
+                Header="选择游戏配置"
+                PlaceholderText="请选择一个游戏配置方案..."
+                SelectionChanged="GameSelector_SelectionChanged" />
+
+            <Button
+                x:Name="LoadConfigButton"
+                Grid.Column="1"
+                VerticalAlignment="Bottom"
+                Click="LoadConfig_Click"
+                IsEnabled="False">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE8E5;" />
+                    <TextBlock Text="加载配置文件" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                x:Name="SaveConfigButton"
+                Grid.Column="2"
+                VerticalAlignment="Bottom"
+                Click="SaveConfig_Click"
+                IsEnabled="False"
+                Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE74E;" />
+                    <TextBlock Text="保存配置文件" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                x:Name="ResetDefaultsButton"
+                Grid.Column="3"
+                VerticalAlignment="Bottom"
+                Click="ResetDefaults_Click"
+                IsEnabled="False">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE72C;" />
+                    <TextBlock Text="恢复默认值" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Status InfoBar -->
+        <InfoBar
+            x:Name="StatusInfoBar"
+            Grid.Row="3"
+            IsClosable="True"
+            IsOpen="False" />
+
+        <!-- Dynamic config fields container -->
+        <ScrollViewer Grid.Row="4">
+            <StackPanel x:Name="FieldsContainer" Spacing="16" Padding="0,0,16,0" />
+        </ScrollViewer>
+
+        <!-- Config file info bar -->
+        <Border
+            x:Name="ConfigFileInfoPanel"
+            Grid.Row="5"
+            Padding="12"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            CornerRadius="8"
+            Visibility="Collapsed">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon Grid.Column="0" Glyph="&#xE946;" FontSize="14"
+                          Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <TextBlock
+                    x:Name="ConfigFileInfoText"
+                    Grid.Column="1"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    TextWrapping="Wrap" />
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

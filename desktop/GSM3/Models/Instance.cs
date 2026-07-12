@@ -14,12 +14,19 @@ public class Instance
     public string ProgramPath { get; set; } = "";
     public StopCommand StopCommandType { get; set; } = StopCommand.CtrlC;
     public bool AutoStart { get; set; }
+    public bool AutoRestart { get; set; }
+    public int AutoRestartMaxRetries { get; set; } = 3;
+    public int AutoRestartDelaySeconds { get; set; } = 10;
     public bool EnableStreamForward { get; set; }
     public InstanceType Type { get; set; } = InstanceType.Generic;
+    public int Port { get; set; }
     public InstanceStatus Status { get; set; } = InstanceStatus.Stopped;
     public string TerminalUser { get; set; } = "";
     public string TerminalSessionId { get; set; } = "";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastStarted { get; set; }
     public DateTime? LastStopped { get; set; }
+    public string SteamAppId { get; set; } = "";
+
+    public override string ToString() => Name;
 }

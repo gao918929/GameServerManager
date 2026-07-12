@@ -30,7 +30,118 @@
             </TitleBar.IconSource>
         </TitleBar>
 
-        <!-- Login overlay -->
+        <!-- ========== 启动界面 ========== -->
+        <Grid x:Name="StartPanel" Grid.Row="1">
+            <Grid.Background>
+                <SolidColorBrush Color="{ThemeResource SolidBackgroundFillColorBase}" />
+            </Grid.Background>
+
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="420"
+                Spacing="24">
+
+                <!-- Logo 区域 -->
+                <StackPanel HorizontalAlignment="Center" Spacing="8">
+                    <FontIcon Glyph="&#xE7FC;" FontSize="64"
+                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                              HorizontalAlignment="Center" />
+                    <TextBlock
+                        Text="GSM3"
+                        Style="{StaticResource TitleLargeTextBlockStyle}"
+                        HorizontalAlignment="Center"
+                        FontSize="36" FontWeight="Bold" />
+                    <TextBlock
+                        Text="游戏服务器管理面板"
+                        Style="{StaticResource SubtitleTextBlockStyle}"
+                        HorizontalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+
+                <!-- 设置卡片 -->
+                <Border x:Name="SettingsCard"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="20"
+                        Visibility="Collapsed">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="服务设置" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                        <NumberBox x:Name="PortBox"
+                                   Header="服务端口"
+                                   Value="3000"
+                                   Minimum="1" Maximum="65535"
+                                   SpinButtonPlacementMode="Compact"
+                                   SmallChange="1" />
+
+                        <TextBox x:Name="HostBox"
+                                 Header="监听地址"
+                                 Text="0.0.0.0"
+                                 PlaceholderText="0.0.0.0 表示所有网卡" />
+
+                        <NumberBox x:Name="MaxSessionsBox"
+                                   Header="最大终端会话数"
+                                   Value="10"
+                                   Minimum="1" Maximum="100"
+                                   SpinButtonPlacementMode="Compact"
+                                   SmallChange="1" />
+
+                        <NumberBox x:Name="SessionTimeoutBox"
+                                   Header="会话超时 (分钟)"
+                                   Value="30"
+                                   Minimum="5" Maximum="1440"
+                                   SpinButtonPlacementMode="Compact"
+                                   SmallChange="5" />
+
+                        <TextBox x:Name="GamePathBox"
+                                 Header="游戏默认安装路径"
+                                 PlaceholderText="留空使用默认路径" />
+
+                        <TextBox x:Name="SteamCMDPathBox"
+                                 Header="SteamCMD 路径"
+                                 PlaceholderText="留空自动下载安装" />
+
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                            <Button Content="保存" Style="{StaticResource AccentButtonStyle}"
+                                    Click="SaveSettings_Click" />
+                            <Button Content="取消" Click="CancelSettings_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 状态信息 -->
+                <InfoBar x:Name="StartInfoBar" IsOpen="False" IsClosable="True" />
+
+                <!-- 按钮区域 -->
+                <StackPanel x:Name="StartButtons" Spacing="12">
+                    <Button x:Name="StartButton"
+                            Content="启动面板"
+                            Style="{StaticResource AccentButtonStyle}"
+                            HorizontalAlignment="Stretch"
+                            Height="48" FontSize="16"
+                            Click="StartButton_Click" />
+                    <Button x:Name="SettingsButton"
+                            HorizontalAlignment="Stretch"
+                            Height="40"
+                            Click="SettingsButton_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE713;" FontSize="16" />
+                            <TextBlock Text="设置" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- 版本信息 -->
+                <TextBlock
+                    Text="v1.0.0 · C# + WinUI 3"
+                    HorizontalAlignment="Center"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- ========== 登录界面 ========== -->
         <Grid x:Name="LoginPanel" Grid.Row="1" Visibility="Collapsed">
             <Grid.Background>
                 <SolidColorBrush Color="{ThemeResource SolidBackgroundFillColorBase}" />
@@ -63,24 +174,32 @@
                     IsOpen="False"
                     Severity="Error"
                     IsClosable="False" />
+                <CheckBox
+                    x:Name="RememberMeCheck"
+                    Content="记住账号密码" />
                 <Button
                     x:Name="LoginButton"
                     Content="登录"
                     Style="{StaticResource AccentButtonStyle}"
                     HorizontalAlignment="Stretch"
                     Click="LoginButton_Click" />
-                <HyperlinkButton
-                    x:Name="RegisterLink"
-                    Content="没有账号？点击注册"
-                    HorizontalAlignment="Center"
-                    Click="RegisterLink_Click" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16">
+                    <HyperlinkButton
+                        x:Name="RegisterLink"
+                        Content="没有账号？点击注册"
+                        Click="RegisterLink_Click" />
+                    <HyperlinkButton
+                        Content="返回"
+                        Click="BackToStart_Click" />
+                </StackPanel>
             </StackPanel>
         </Grid>
 
-        <!-- Main navigation -->
+        <!-- ========== 主导航界面 ========== -->
         <NavigationView
             x:Name="NavView"
             Grid.Row="1"
+            Visibility="Collapsed"
             IsBackButtonVisible="Collapsed"
             IsPaneToggleButtonVisible="False"
             SelectionChanged="NavView_SelectionChanged"
@@ -97,9 +216,29 @@
                         <FontIcon Glyph="&#xE7F8;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem Content="RCON 控制台" Tag="rcon">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE756;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="玩家管理" Tag="playermanage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE902;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="服务器状态" Tag="serverstatus">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE957;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem Content="终端" Tag="terminal">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE756;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="日志查看" Tag="logs">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE9F9;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="文件管理" Tag="files">
@@ -110,6 +249,11 @@
                 <NavigationViewItem Content="游戏部署" Tag="deploy">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE896;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="配置编辑" Tag="gameconfig">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE70F;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="定时任务" Tag="scheduler">
@@ -132,9 +276,19 @@
                         <FontIcon Glyph="&#xE74C;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="插件" Tag="plugins">
+                <NavigationViewItem Content="FRP 内网穿透" Tag="frp">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xEA86;" />
+                        <FontIcon Glyph="&#xEC05;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Webhook 通知" Tag="webhook">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE910;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="命令模板" Tag="cmdtemplate">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE943;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="用户管理" Tag="users">

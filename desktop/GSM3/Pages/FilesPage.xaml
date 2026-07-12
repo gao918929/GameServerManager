@@ -15,6 +15,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -25,8 +27,17 @@
             Style="{StaticResource TitleTextBlockStyle}"
             Text="文件管理" />
 
+        <!-- Instance Selector -->
+        <ComboBox
+            x:Name="InstanceSelector"
+            Grid.Row="1"
+            MinWidth="300"
+            Header="选择实例"
+            PlaceholderText="选择实例以浏览其文件..."
+            SelectionChanged="InstanceSelector_SelectionChanged" />
+
         <!-- Drive Selector + Path Bar -->
-        <Grid Grid.Row="1" ColumnSpacing="8">
+        <Grid Grid.Row="2" ColumnSpacing="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -68,7 +79,7 @@
         </Grid>
 
         <!-- Toolbar -->
-        <CommandBar Grid.Row="2" DefaultLabelPosition="Right">
+        <CommandBar Grid.Row="3" DefaultLabelPosition="Right">
             <AppBarButton
                 x:Name="NewFileButton"
                 Click="NewFileButton_Click"
@@ -139,11 +150,65 @@
                     <FontIcon Glyph="&#xE8B4;" />
                 </AppBarButton.Icon>
             </AppBarButton>
+            <AppBarButton
+                x:Name="ExtractButton"
+                Click="ExtractButton_Click"
+                Label="解压">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE7B8;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
         </CommandBar>
+
+        <!-- Search + Sort -->
+        <Grid Grid.Row="4" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                x:Name="SearchTextBox"
+                Grid.Column="0"
+                VerticalAlignment="Bottom"
+                KeyDown="SearchTextBox_KeyDown"
+                PlaceholderText="搜索文件..." />
+
+            <Button
+                Grid.Column="1"
+                VerticalAlignment="Bottom"
+                Click="SearchButton_Click">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon FontSize="14" Glyph="&#xE721;" />
+                    <TextBlock Text="搜索" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Grid.Column="2"
+                VerticalAlignment="Bottom"
+                Click="ClearSearchButton_Click">
+                <TextBlock Text="清除" />
+            </Button>
+
+            <ComboBox
+                x:Name="SortComboBox"
+                Grid.Column="3"
+                MinWidth="120"
+                Header="排序"
+                SelectionChanged="SortComboBox_SelectionChanged">
+                <x:String>名称</x:String>
+                <x:String>大小</x:String>
+                <x:String>修改日期</x:String>
+                <x:String>类型</x:String>
+            </ComboBox>
+        </Grid>
 
         <!-- Column Headers -->
         <Grid
-            Grid.Row="3"
+            Grid.Row="5"
             Padding="12,8,12,8"
             BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
             BorderThickness="0,0,0,1">
@@ -170,7 +235,7 @@
 
         <!-- File List -->
         <Border
-            Grid.Row="4"
+            Grid.Row="6"
             Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
             CornerRadius="8">
             <ListView
@@ -180,7 +245,7 @@
                 SelectionMode="Extended">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:FileItem">
-                        <Grid Padding="4,6" ColumnSpacing="8">
+                        <Grid Padding="4,6" ColumnSpacing="8" RightTapped="FileItem_RightTapped">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="32" />
                                 <ColumnDefinition Width="*" />
@@ -217,9 +282,16 @@
         <!-- Status Bar -->
         <TextBlock
             x:Name="StatusText"
-            Grid.Row="5"
+            Grid.Row="7"
             Padding="4"
             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
             Text="共 0 项, 已选择 0 项" />
+
+        <!-- Status InfoBar -->
+        <InfoBar
+            x:Name="StatusInfoBar"
+            Grid.Row="6"
+            VerticalAlignment="Bottom"
+            IsOpen="False" />
     </Grid>
 </Page>

@@ -15,17 +15,67 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Welcome Message -->
-            <TextBlock
-                Grid.Row="0"
-                Style="{StaticResource TitleTextBlockStyle}"
-                Text="欢迎使用 GSM3 游戏服务器管理面板" />
+            <!-- Row 0: Welcome Message + System Uptime -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    Style="{StaticResource TitleTextBlockStyle}"
+                    Text="欢迎使用 GSM3 游戏服务器管理面板" />
+                <StackPanel
+                    Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="6"
+                    VerticalAlignment="Center">
+                    <FontIcon
+                        Glyph="&#xE916;"
+                        FontSize="14"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock
+                        x:Name="UptimeText"
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Text="系统运行: 计算中..." />
+                </StackPanel>
+            </Grid>
 
-            <!-- Instance Count & Status Summary Cards -->
-            <Grid Grid.Row="1" ColumnSpacing="16">
+            <!-- Row 1: System Resource Alerts -->
+            <StackPanel Grid.Row="1" Spacing="4">
+                <InfoBar
+                    x:Name="CpuAlertInfoBar"
+                    Title="CPU 警告"
+                    Message="CPU 使用率持续超过 90%"
+                    Severity="Warning"
+                    IsOpen="False"
+                    IsClosable="True" />
+                <InfoBar
+                    x:Name="MemoryAlertInfoBar"
+                    Title="内存警告"
+                    Message="内存使用率超过 90%"
+                    Severity="Warning"
+                    IsOpen="False"
+                    IsClosable="True" />
+                <InfoBar
+                    x:Name="DiskAlertInfoBar"
+                    Title="磁盘警告"
+                    Message="磁盘使用率超过 95%"
+                    Severity="Warning"
+                    IsOpen="False"
+                    IsClosable="True" />
+            </StackPanel>
+
+            <!-- Row 2: Instance Count & Status Summary Cards -->
+            <Grid Grid.Row="2" ColumnSpacing="16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
@@ -105,8 +155,57 @@
                 </Border>
             </Grid>
 
-            <!-- System Resource Gauges -->
-            <StackPanel Grid.Row="2" Spacing="12">
+            <!-- Row 3: Quick Start Card (shown when no instances exist) -->
+            <Border
+                x:Name="QuickStartCard"
+                Grid.Row="3"
+                Padding="24"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource SystemAccentColor}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Visibility="Collapsed">
+                <Grid ColumnSpacing="24">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon
+                        Grid.Column="0"
+                        Glyph="&#xE7B5;"
+                        FontSize="48"
+                        Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                        VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="1" Spacing="12">
+                        <TextBlock
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="快速入门" />
+                        <TextBlock
+                            TextWrapping="Wrap"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="您还没有创建任何游戏服务器实例。点击下方按钮开始部署您的第一个游戏服务器，或手动创建自定义实例。" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button
+                                Style="{StaticResource AccentButtonStyle}"
+                                Click="QuickDeploy_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon FontSize="16" Glyph="&#xE896;" />
+                                    <TextBlock Text="部署游戏服务器" />
+                                </StackPanel>
+                            </Button>
+                            <Button Click="QuickCreate_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon FontSize="16" Glyph="&#xE710;" />
+                                    <TextBlock Text="创建自定义实例" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Row 4: System Resource Gauges -->
+            <StackPanel Grid.Row="4" Spacing="12">
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     Text="系统资源" />
@@ -214,38 +313,120 @@
                 </Border>
             </StackPanel>
 
-            <!-- Quick Actions -->
-            <StackPanel Grid.Row="3" Spacing="12">
+            <!-- Row 5: Network Traffic Summary -->
+            <StackPanel Grid.Row="5" Spacing="12">
+                <TextBlock
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="网络流量" />
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="8">
+                    <Grid ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="上传速度" />
+                            <TextBlock
+                                x:Name="UploadSpeedText"
+                                FontSize="20"
+                                FontWeight="SemiBold"
+                                Text="0 B/s" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="下载速度" />
+                            <TextBlock
+                                x:Name="DownloadSpeedText"
+                                FontSize="20"
+                                FontWeight="SemiBold"
+                                Text="0 B/s" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="总发送" />
+                            <TextBlock
+                                x:Name="TotalSentText"
+                                FontSize="20"
+                                FontWeight="SemiBold"
+                                Text="0 B" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="3" Spacing="4">
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Text="总接收" />
+                            <TextBlock
+                                x:Name="TotalReceivedText"
+                                FontSize="20"
+                                FontWeight="SemiBold"
+                                Text="0 B" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <!-- Row 6: Quick Actions -->
+            <StackPanel Grid.Row="6" Spacing="12">
                 <TextBlock
                     Style="{StaticResource SubtitleTextBlockStyle}"
                     Text="快速操作" />
 
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Button Style="{StaticResource AccentButtonStyle}">
+                    <Button Style="{StaticResource AccentButtonStyle}" Click="QuickAction_CreateInstance">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon FontSize="16" Glyph="&#xE710;" />
                             <TextBlock Text="创建实例" />
                         </StackPanel>
                     </Button>
-                    <Button>
+                    <Button Click="QuickAction_OpenTerminal">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon FontSize="16" Glyph="&#xE756;" />
                             <TextBlock Text="打开终端" />
                         </StackPanel>
                     </Button>
-                    <Button>
+                    <Button Click="QuickAction_FileManager">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon FontSize="16" Glyph="&#xE8B7;" />
                             <TextBlock Text="文件管理" />
                         </StackPanel>
                     </Button>
-                    <Button>
+                    <Button Click="QuickAction_SystemMonitor">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <FontIcon FontSize="16" Glyph="&#xE9D9;" />
                             <TextBlock Text="系统监控" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
+            </StackPanel>
+
+            <!-- Row 7: Recent Activity Log -->
+            <StackPanel Grid.Row="7" Spacing="12">
+                <TextBlock
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Text="最近活动" />
+                <Border
+                    Padding="16"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    CornerRadius="8">
+                    <StackPanel x:Name="ActivityLogPanel" Spacing="6">
+                        <TextBlock
+                            x:Name="NoActivityText"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Text="暂无活动记录" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </Grid>
     </ScrollViewer>
