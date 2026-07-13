@@ -10,6 +10,8 @@ namespace GSM3.Pages;
 
 public sealed partial class GameDeployPage : Page
 {
+    private static readonly Regex SteamProgressRegex = new(
+        @"progress:\s*([\d.]+)\s*\(", RegexOptions.Compiled);
     // ── Steam game data model ─────────────────────────────────
     public class SteamGameItem
     {
@@ -120,7 +122,18 @@ public sealed partial class GameDeployPage : Page
         _instanceManager = ServiceLocator.GetService<InstanceManager>();
 
         _steamCmdManager.OnOutput += (_, msg) =>
-            DispatcherQueue.TryEnqueue(() => SteamDeployStatusText.Text = msg);
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                SteamDeployStatusText.Text = msg;
+                var match = SteamProgressRegex.Match(msg);
+                if (match.Success && double.TryParse(match.Groups[1].Value,
+                    System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var pct))
+                {
+                    SteamDeployProgress.IsIndeterminate = false;
+                    SteamDeployProgress.Value = pct;
+                }
+            });
 
         _mcDeployService.OnLog += (_, msg) =>
             DispatcherQueue.TryEnqueue(() => McDeployStatusText.Text = msg);

@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using GSM3.Services;
+using Windows.Storage.Pickers;
 
 namespace GSM3.Pages;
 
@@ -18,12 +19,20 @@ public sealed partial class WelcomePage : Page
         Loaded += WelcomePage_Loaded;
     }
 
+    private static readonly string DataDir = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GSM3");
+
     private void WelcomePage_Loaded(object sender, RoutedEventArgs e)
     {
-        // Load existing config values into wizard fields
         var config = _configManager.Config;
-        WizardSteamCMDPath.Text = config.SteamCMD.InstallPath;
-        WizardGameInstallPath.Text = config.Game.InstallPath;
+
+        WizardSteamCMDPath.Text = !string.IsNullOrEmpty(config.SteamCMD.InstallPath)
+            ? config.SteamCMD.InstallPath
+            : Path.Combine(DataDir, "steamcmd");
+
+        WizardGameInstallPath.Text = !string.IsNullOrEmpty(config.Game.InstallPath)
+            ? config.Game.InstallPath
+            : Path.Combine(DataDir, "games");
 
         UpdateStepUI();
     }
@@ -32,7 +41,16 @@ public sealed partial class WelcomePage : Page
     {
         if (_currentStep == 2)
         {
-            // Save paths before moving to step 3
+            var steamPath = WizardSteamCMDPath.Text?.Trim();
+            var gamePath = WizardGameInstallPath.Text?.Trim();
+
+            if (string.IsNullOrEmpty(steamPath) || string.IsNullOrEmpty(gamePath))
+            {
+                PathValidationInfoBar.IsOpen = true;
+                return;
+            }
+
+            PathValidationInfoBar.IsOpen = false;
             SavePaths();
         }
 
@@ -147,5 +165,30 @@ public sealed partial class WelcomePage : Page
         Dot2.Fill = _currentStep >= 2 ? activeBrush : inactiveBrush;
         Dot3.Fill = _currentStep >= 3 ? activeBrush : inactiveBrush;
         Dot4.Fill = _currentStep >= 4 ? activeBrush : inactiveBrush;
+    }
+
+    private async void BrowseSteamCMDPath_Click(object sender, RoutedEventArgs e)
+    {
+        var path = await PickFolderAsync();
+        if (path != null) WizardSteamCMDPath.Text = path;
+    }
+
+    private async void BrowseGameInstallPath_Click(object sender, RoutedEventArgs e)
+    {
+        var path = await PickFolderAsync();
+        if (path != null) WizardGameInstallPath.Text = path;
+    }
+
+    private async Task<string?> PickFolderAsync()
+    {
+        var picker = new FolderPicker();
+        picker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+        picker.FileTypeFilter.Add("*");
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainAppWindow);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+        var folder = await picker.PickSingleFolderAsync();
+        return folder?.Path;
     }
 }
